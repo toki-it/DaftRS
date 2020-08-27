@@ -71,6 +71,13 @@ def wait_for_usb(dfu=False):
 	else:
 		suffix = 'c006'
 
+	# Check for Photon
+	output = run("lsusb | grep 2b04:{}".format(suffix), shell=True)
+	if output:
+		return
+
+	# Check for Nutron Device
+	suffix = 'c058'
 	output = run("lsusb | grep 2b04:{}".format(suffix), shell=True)
 	if output:
 		return
@@ -150,43 +157,82 @@ def manualfw(model):
 		return False
 
 
-def check_firmware():
-	sleep(5)
-	wait_for_particle()
+def check_firmware(model):
+	if model == '06':
+		sleep(5)
+		wait_for_particle()
 
-	print('\n[?] Looking for DaftRacing multimode firmware... ')
+		print('\n[?] Looking for DaftRacing multimode firmware... ')
 
-	perror = run('particle usb list -v --ids-only | grep -i error', shell=True)
-	if perror:
-		print('[!] Device not recognized...')
-		return False
-
-
-	print('\t[ ] Opening serial connection... ', end='', flush=True)
-
-	lastacm = None
-	for a in glob.glob('/dev/ttyACM*'):
-		lastacm = a
-	if not lastacm:
-		return False
-
-	ser = serial.Serial(lastacm, 9600, timeout=5)
-	if not ser:
-		return False
-
-	print('OK\r\t[+')
-
-	print('\t[?] Checking firmware version... ', end='', flush=True)
-	ser.write(b'v\r')
-	firmware = ser.readline()
-	ser.close()
-	if not firmware or not b'multimode' in firmware:
-		print('\r\t[-] No DaftRacing firmware found on this Particle device...')
-		return False
-	print('\r\t[+] Firmware: {}'.format(firmware.decode("utf-8")))
+		perror = run('particle usb list -v --ids-only | grep -i error', shell=True)
+		if perror:
+			print('[!] Device not recognized...')
+			return False
 
 
-	return True
+		print('\t[ ] Opening serial connection... ', end='', flush=True)
+
+		lastacm = None
+		for a in glob.glob('/dev/ttyACM*'):
+			lastacm = a
+		if not lastacm:
+			return False
+
+		ser = serial.Serial(lastacm, 9600, timeout=5)
+		if not ser:
+			return False
+
+		print('OK\r\t[+')
+
+		print('\t[?] Checking firmware version... ', end='', flush=True)
+		ser.write(b'v\r')
+		firmware = ser.readline()
+		ser.close()
+		if not firmware or not b'multimode' in firmware:
+			print('\r\t[-] No DaftRacing firmware found on this Particle device...')
+			return False
+		print('\r\t[+] Firmware: {}'.format(firmware.decode("utf-8")))
+
+
+		return True
+	elif model == '58':
+		sleep(5)
+		print('\t[ ] Opening serial connection... ', end='', flush=True)
+
+		lastacm = None
+		for a in glob.glob('/dev/ttyACM*'):
+			lastacm = a
+		if not lastacm:
+			return False
+
+		ser = serial.Serial(lastacm, 9600, timeout=5)
+		if not ser:
+			return False
+
+		print('OK\r\t[+')
+
+		print('\t[?] Checking firmware version... ', end='', flush=True)
+		ser.write(b'i\r')
+		firmware = ser.readline()
+		firmware = ser.readline()
+		
+
+		if not firmware or not b'flash' in firmware:
+			print('\r\t[-] Please update Nutron Device firmware...')
+			return False
+		print('\r\t[+] Firmware: {}'.format(firmware.decode("utf-8")))
+
+		# Check battery voltage
+		#if not voltage():
+		#	ret
+
+		print('\t[ ] Enabling SocketCAN... ', end='', flush=True)
+		ser.write(b'P\r')
+		
+		ser.close()
+		sleep(5)
+
+		return True
 
 
 def iface(speed):
@@ -217,8 +263,8 @@ def carloop_init(speed):
 	if not model:
 		return False
 
-	if not check_firmware():
-		if manualfw(model):
+	if not check_firmware(model):
+		if manualfw(model) and model == '06':
 			if not check_firmware():
 				print("\n[!] Please manually install Daftracing firmware from firmware/SoftStick.ino")
 				return False
