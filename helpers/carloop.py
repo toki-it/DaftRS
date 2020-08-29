@@ -197,7 +197,7 @@ def check_firmware(model):
 		return True
 	elif model == '58':
 		sleep(5)
-		print('\t[ ] Opening serial connection... ', end='', flush=True)
+		debug('\t[ ] Opening serial connection... ', end='')
 
 		lastacm = None
 		for a in glob.glob('/dev/ttyACM*'):
@@ -209,28 +209,25 @@ def check_firmware(model):
 		if not ser:
 			return False
 
-		print('OK\r\t[+')
+		debug('OK\r\t[+')
 
-		print('\t[?] Checking firmware version... ', end='', flush=True)
+		debug('\t[?] Checking firmware version... ')
 		ser.write(b'i\r')
 		firmware = ser.readline()
 		firmware = ser.readline()
 		
 
 		if not firmware or not b'flash' in firmware:
-			print('\r\t[-] Please update Nutron Device firmware...')
+			debug('\r\t[-] Please update Nutron Device firmware...')
 			return False
-		print('\r\t[+] Firmware: {}'.format(firmware.decode("utf-8")))
+		debug('\r\t[+] Firmware: {} OK'.format(firmware.decode("utf-8").replace("Version:", "").strip()))
 
-		# Check battery voltage
-		#if not voltage():
-		#	ret
-
-		print('\t[ ] Enabling SocketCAN... ', end='', flush=True)
+		debug('\t[ ] Enabling SocketCAN... ', end='')
 		ser.write(b'P\r')
 		
 		ser.close()
-		sleep(5)
+		sleep(3)
+		debug('OK\r\t[+')
 
 		return True
 
@@ -242,7 +239,7 @@ def iface(speed):
 	if speed == "HSCAN":
 		s = 6
 	if not s:
-		return Flase
+		return False
 
 
 	debug('[ ] Bringing CAN interface up (Particle should start fading green)... ', end='')

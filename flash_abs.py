@@ -37,9 +37,14 @@ def warning():
 
 	debug('''
 [>] Great! Please follow the steps below:
-	1. Connect your Particle device to the computer's USB port but DO NOT plug it to the OBD port just yet
+	# For Carloop device:
+	1. Connect your device to the computer's USB port but DO NOT plug it to the OBD port just yet
 	2. Connect it to this Virtual Machine (select Virtual Machine -> USB -> Connect Particle from the menu)
 	3. If you got your Carloop preflashed from DaftRacing it should be fading Gray by now.
+
+	# For Nutron device:
+	1. Connect your device to the computer's USB port but DO NOT plug it to the OBD port just yet
+	2. Connect it to this Virtual Machine (select Virtual Machine -> USB -> Connect Duo from the menu)
 
 [?] Hit return when ready... ''', end='')
 	input()
@@ -79,7 +84,7 @@ def main():
 	carloop_init("HSCAN")
 
 	debug('''\n[>] All set, we are good to go!
-	1. Connect Carloop device to the OBD diagnostic port
+	1. Connect Carloop/Nutron device to the OBD diagnostic port
 	2. Turn ON the ignition but do NOT start the engine
 	3. Hit return when ready''')
 	input()
