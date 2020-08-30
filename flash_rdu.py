@@ -40,7 +40,7 @@ def warning():
 	2. Connect it to this Virtual Machine (select Virtual Machine -> USB -> Connect Particle from the menu)
 	3. If you got your Carloop preflashed from DaftRacing it should be fading Gray by now.
 
-	# For Nutron device:
+	# For Nutron devICE:
 	1. Connect your device to the computer's USB port but DO NOT plug it to the OBD port just yet
 	2. Connect it to this Virtual Machine (select Virtual Machine -> USB -> Connect Duo from the menu)
 

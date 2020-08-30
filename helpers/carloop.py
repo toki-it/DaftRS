@@ -76,7 +76,7 @@ def wait_for_usb(dfu=False):
 	if output:
 		return
 
-	# Check for Nutron Device
+	# Check for Nutron devICE
 	suffix = 'c058'
 	output = run("lsusb | grep 2b04:{}".format(suffix), shell=True)
 	if output:
@@ -151,7 +151,8 @@ def manualfw(model):
 		sleep(3)
 		wait_for_particle()
 		return True
-
+	elif model == '58':
+		debug('''[>] Connect your Nutron device to WiFi network, it will check for newer firmware version''')
 	else:
 		debug('\nHint: Register your device and flash firmware/SoftStick.ino using Particle Web IDE (https://build.particle.io/build)')
 		return False
@@ -218,7 +219,7 @@ def check_firmware(model):
 		
 
 		if not firmware or not b'flash' in firmware:
-			debug('\r\t[-] Please update Nutron Device firmware...')
+			debug('\r\t[-] Please update Nutron devICE firmware...')
 			return False
 		debug('\r\t[+] Firmware: {} OK'.format(firmware.decode("utf-8").replace("Version:", "").strip()))
 
